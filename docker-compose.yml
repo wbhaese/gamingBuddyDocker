@@ -1,0 +1,47 @@
+version: "2"
+
+services:
+  web:
+   image: amazonlinux:2018.03
+   container_name: Amazonlinux
+   ports:
+   - "8081:80"
+   volumes:
+   - ./public:/public
+   - ./src/site.conf:/etc/nginx/conf.d/site.conf
+   - ./src/nginx/logs:/var/log/nginx/
+
+  php:
+   image: php:7-fpm
+   container_name: PHP7
+   volumes:
+   - ./public:/public
+
+  db:
+   image: mariadb:latest
+   container_name: MariaDB
+   volumes:
+    - ./src/mariadb:/var/lib/mysql
+   environment:
+    MYSQL_RANDOM_ROOT_PASSWORD: 1
+    MYSQL_DATABASE: dev
+    MYSQL_USER: dev
+    MYSQL_PASSWORD: dev123
+   expose:
+   - 3306
+
+  pma:
+   image: phpmyadmin/phpmyadmin
+   container_name: PHPMyAdmin
+   environment:
+    PMA_ARBITRARY: 1
+    PMA_HOST: db
+    PMA_USER: dev
+    PMA_PASSWORD: dev123
+    PHP_UPLOAD_MAX_FILESIZE: 1G
+    PHP_MAX_INPUT_VARS: 1G
+   restart: always
+   ports:
+   - "8001:80"
+   volumes:
+   - ./src/sessions:/sessions 
